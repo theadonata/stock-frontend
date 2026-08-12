@@ -1,0 +1,15 @@
+# Local dev compose file for stock-frontend ONLY. Per the architecture's
+# "no shared code or path dependency" rule between the stock-* repos, this
+# does NOT reference stock-backend's compose file or source tree -- run
+# stock-backend's own docker-compose separately and point VITE_API_BASE_URL
+# at wherever it ends up listening (see README for the full workflow).
+services:
+  stock-frontend:
+    build:
+      context: .
+      args:
+        # Baked in at build time since Vite env vars are compile-time.
+        # Override via `VITE_API_BASE_URL=http://host:port docker compose up --build`.
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8000}
+    ports:
+      - "8080:80"

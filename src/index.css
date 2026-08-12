@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base document styling. A sane default focus ring and font stack live here
+   so every element gets baseline accessibility/legibility even before
+   component-level Tailwind classes are applied. "canvas"/"ink" are the
+   app's paper-and-ledger base surface and text color -- see
+   tailwind.config.js for the full "ledger & hangtag" palette rationale. */
+body {
+  @apply bg-canvas text-ink font-sans antialiased;
+}
+
+/* Brass selection highlight instead of the browser default blue -- a small
+   detail, but stray default-blue text selection is one of the fastest
+   "this wasn't designed" tells. */
+::selection {
+  @apply bg-brass-light text-ink;
+}
