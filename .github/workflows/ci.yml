@@ -48,7 +48,7 @@ jobs:
         run: npm run build
 
       - name: Upload coverage artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage
           path: coverage/
@@ -104,7 +104,7 @@ jobs:
       - name: Save image as artifact
         run: docker save ${{ steps.meta.outputs.tag }} -o image.tar
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: frontend-image
           path: image.tar
