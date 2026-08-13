@@ -16,5 +16,11 @@ export default defineConfig({
     globals: true,
     setupFiles: "./src/test/setup.ts",
     css: true,
+    // Node >=26's own global `localStorage` (an experimental Web Storage
+    // API implementation, on by default) shadows jsdom's -- app code that
+    // reads localStorage before jsdom's version is consulted throws
+    // instead, since Node's is unconfigured without --localstorage-file.
+    // Disabling it lets jsdom's window.localStorage win like it always did.
+    execArgv: ["--no-experimental-webstorage"],
   },
 });
