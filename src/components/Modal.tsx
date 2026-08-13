@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useRef, type ReactNode } from "react";
 
 interface ModalProps {
   title: string;
@@ -24,7 +24,13 @@ export function Modal({ title, isOpen, onClose, children }: ModalProps) {
   // keystroke and re-focused the dialog container, yanking focus out of
   // whichever field the user was typing into.
   const onCloseRef = useRef(onClose);
-  onCloseRef.current = onClose;
+  // Ref writes must happen outside render (React docs / react-hooks/refs);
+  // useLayoutEffect fires synchronously right after commit, so this is
+  // still "fresh before any event could fire" without the correctness
+  // issues of writing to onCloseRef.current directly in the function body.
+  useLayoutEffect(() => {
+    onCloseRef.current = onClose;
+  });
 
   useEffect(() => {
     if (!isOpen) return;
