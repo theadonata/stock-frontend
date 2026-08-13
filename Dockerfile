@@ -22,7 +22,7 @@ ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 RUN npm run build
 
 # ---- Serve stage ----
-FROM nginx:1.27-alpine AS serve
+FROM nginx:1.31-alpine AS serve
 
 # The base image tag is floating and its last rebuild can lag behind Alpine's
 # own package patches, so pull in current package versions at build time
