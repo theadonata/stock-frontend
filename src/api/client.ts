@@ -70,7 +70,7 @@ export async function apiRequest<T>(
       headers,
       body: body !== undefined ? JSON.stringify(body) : undefined,
     });
-  } catch (err) {
+  } catch {
     // fetch() itself throws on network failure (offline, DNS, CORS, etc.) --
     // normalize that into the same ApiError shape callers already handle.
     throw new ApiError(0, "Network error -- unable to reach the server.");
