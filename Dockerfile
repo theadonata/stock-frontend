@@ -24,6 +24,11 @@ RUN npm run build
 # ---- Serve stage ----
 FROM nginx:1.27-alpine AS serve
 
+# The base image tag is floating and its last rebuild can lag behind Alpine's
+# own package patches, so pull in current package versions at build time
+# rather than trusting whatever the tag happened to resolve to.
+RUN apk update && apk upgrade --no-cache
+
 # Custom nginx config adds SPA fallback (all routes serve index.html so
 # React Router's client-side routes work on a hard refresh/deep link).
 COPY nginx.conf /etc/nginx/conf.d/default.conf
