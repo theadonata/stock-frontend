@@ -125,7 +125,7 @@ jobs:
         run: docker load -i image.tar
 
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@0.24.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: ${{ needs.build-image.outputs.image-tag }}
           format: table
@@ -135,7 +135,7 @@ jobs:
 
       - name: Run Trivy (SARIF for code scanning)
         if: always()
-        uses: aquasecurity/trivy-action@0.24.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: ${{ needs.build-image.outputs.image-tag }}
           format: sarif
