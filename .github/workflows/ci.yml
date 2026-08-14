@@ -9,6 +9,7 @@ on:
 permissions:
   contents: read
   security-events: write
+  packages: write
 
 jobs:
   secret-scan:
@@ -92,14 +93,19 @@ jobs:
     needs: test
     outputs:
       image-tag: ${{ steps.meta.outputs.tag }}
+      dev-tag: ${{ steps.meta.outputs.dev_tag }}
+      staging-tag: ${{ steps.meta.outputs.staging_tag }}
     steps:
       - uses: actions/checkout@v4
 
       - id: meta
-        run: echo "tag=stock-frontend:${{ github.sha }}" >> "$GITHUB_OUTPUT"
+        run: |
+          echo "tag=ghcr.io/theadonata/stock-frontend:${{ github.sha }}" >> "$GITHUB_OUTPUT"
+          echo "dev_tag=ghcr.io/theadonata/stock-frontend:dev" >> "$GITHUB_OUTPUT"
+          echo "staging_tag=ghcr.io/theadonata/stock-frontend:staging" >> "$GITHUB_OUTPUT"
 
-      - name: Build image (not pushed)
-        run: docker build -t ${{ steps.meta.outputs.tag }} .
+      - name: Build image
+        run: docker build -t ${{ steps.meta.outputs.tag }} -t ${{ steps.meta.outputs.dev_tag }} -t ${{ steps.meta.outputs.staging_tag }} .
 
       - name: Save image as artifact
         run: docker save ${{ steps.meta.outputs.tag }} -o image.tar
@@ -148,3 +154,25 @@ jobs:
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: trivy-results.sarif
+
+  push-image:
+    name: Push image to ghcr.io
+    runs-on: ubuntu-latest
+    needs: [build-image, trivy-scan]
+    if: github.event_name == 'push'
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: frontend-image
+
+      - name: Load image
+        run: docker load -i image.tar
+
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Push image
+        run: |
+          docker push ${{ needs.build-image.outputs.image-tag }}
+          docker push ${{ needs.build-image.outputs.dev-tag }}
+          docker push ${{ needs.build-image.outputs.staging-tag }}
