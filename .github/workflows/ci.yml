@@ -173,7 +173,7 @@ jobs:
 
       - name: Push image
         run: |
-          docker push ${{ needs.build-image.outputs.image-tag }}
+          docker push ${{ steps.meta.outputs.tag }}
           docker push ${{ needs.build-image.outputs.dev-tag }}
           docker push ${{ needs.build-image.outputs.staging-tag }}
 
