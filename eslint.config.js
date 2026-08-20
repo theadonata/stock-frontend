@@ -11,6 +11,16 @@ export default [
   { ignores: ["dist"] },
   js.configs.recommended,
   {
+    // Plain script (not a module, not bundled) that runs in the browser
+    // before the app loads -- see index.html/vite-env.d.ts. Needs browser
+    // globals since it's not covered by the ts/tsx block below.
+    files: ["public/**/*.js"],
+    languageOptions: {
+      sourceType: "script",
+      globals: globals.browser,
+    },
+  },
+  {
     files: ["**/*.{ts,tsx}"],
     languageOptions: {
       parser: tsParser,

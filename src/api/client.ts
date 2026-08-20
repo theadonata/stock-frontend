@@ -3,7 +3,14 @@
 // (2) the JWT is attached consistently everywhere instead of per-call,
 // (3) error handling / 401 redirect logic lives in one place.
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
+// window.__APP_CONFIG__ (from /config.js, generated at container start —
+// see vite-env.d.ts) takes priority so one built image can promote across
+// environments unchanged; VITE_API_BASE_URL only matters for `npm run dev`/
+// `vite preview`, where nothing generates config.js.
+const BASE_URL =
+  window.__APP_CONFIG__?.API_BASE_URL ||
+  import.meta.env.VITE_API_BASE_URL ||
+  "http://localhost:8000";
 const API_PREFIX = "/api/v1";
 
 const TOKEN_STORAGE_KEY = "stock_auth_token";

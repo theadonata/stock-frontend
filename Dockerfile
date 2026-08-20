@@ -34,5 +34,14 @@ RUN apk update && apk upgrade --no-cache
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/dist /usr/share/nginx/html
 
+# Runtime config injection: this envsubst step (not Vite's build-time env
+# vars) is what lets the same built image be deployed to any environment
+# unchanged -- see docker/40-generate-config-js.sh and src/api/client.ts.
+# envsubst ships in this base image already (nginx's own docker-entrypoint.d
+# scripts use it for NGINX_ENVSUBST_TEMPLATE_DIR).
+COPY docker/config.js.template /usr/share/nginx/html/config.js.template
+COPY docker/40-generate-config-js.sh /docker-entrypoint.d/40-generate-config-js.sh
+RUN chmod +x /docker-entrypoint.d/40-generate-config-js.sh
+
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
