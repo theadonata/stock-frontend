@@ -17,8 +17,10 @@ export default {
           DEFAULT: "#1C2321",
           soft: "#2A332F", // one step lighter, for raised dark surfaces (e.g. hover on the dark sidebar)
         },
-        // Warm paper background -- the app's base surface (a ledger page).
-        canvas: "#F6F3EA",
+        // TEMP: swapped from the warm paper "#F6F3EA" to plain grey as a
+        // visible signal for an end-to-end CI/CD -> Argo CD pipeline test.
+        // Revert to "#F6F3EA" once the deploy is confirmed live.
+        canvas: "#808080",
         // Brass hardware accent -- primary actions, active nav, focus rings,
         // the logo mark. Used deliberately sparingly (one accent, per spec).
         brass: {
