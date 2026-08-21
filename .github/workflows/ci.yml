@@ -201,7 +201,7 @@ jobs:
       app_label: frontend
       image_tag: ${{ github.sha }}
       yq_paths: ".frontend.image.tag"
-      auto_merge: false
+      auto_merge: true
     secrets:
       infra_repo_pat: ${{ secrets.INFRA_REPO_PAT }}
 # retrigger: pull in stock-infrastructure bump-values.yml fix (2026-08-21T03:49:45Z)
