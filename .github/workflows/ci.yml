@@ -16,11 +16,11 @@ jobs:
     name: Secret scanning (gitleaks)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - name: Run gitleaks
-        uses: gitleaks/gitleaks-action@v2
+        uses: gitleaks/gitleaks-action@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -28,7 +28,7 @@ jobs:
     name: Lint, test & build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up Node
         uses: actions/setup-node@v7
@@ -59,12 +59,12 @@ jobs:
     runs-on: ubuntu-latest
     needs: test
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: Download coverage artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: coverage
           path: coverage
@@ -80,7 +80,7 @@ jobs:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Dependency review
         uses: actions/dependency-review-action@v5
@@ -96,7 +96,7 @@ jobs:
       dev-tag: ${{ steps.meta.outputs.dev_tag }}
       staging-tag: ${{ steps.meta.outputs.staging_tag }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - id: meta
         run: |
@@ -121,9 +121,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-image
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: frontend-image
 
@@ -161,7 +161,7 @@ jobs:
     needs: [build-image, trivy-scan]
     if: github.event_name == 'push'
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: frontend-image
 
@@ -176,3 +176,32 @@ jobs:
           docker push ${{ needs.build-image.outputs.image-tag }}
           docker push ${{ needs.build-image.outputs.dev-tag }}
           docker push ${{ needs.build-image.outputs.staging-tag }}
+
+  bump-dev:
+    name: Bump dev image tag
+    needs: push-image
+    if: github.event_name == 'push'
+    uses: theadonata/stock-infrastructure/.github/workflows/bump-values.yml@main
+    with:
+      environment: dev
+      app_label: frontend
+      image_tag: ${{ github.sha }}
+      yq_paths: ".frontend.image.tag"
+      auto_merge: true
+    secrets:
+      infra_repo_pat: ${{ secrets.INFRA_REPO_PAT }}
+
+  bump-staging:
+    name: Bump staging image tag
+    needs: push-image
+    if: github.event_name == 'push'
+    uses: theadonata/stock-infrastructure/.github/workflows/bump-values.yml@main
+    with:
+      environment: staging
+      app_label: frontend
+      image_tag: ${{ github.sha }}
+      yq_paths: ".frontend.image.tag"
+      auto_merge: true
+    secrets:
+      infra_repo_pat: ${{ secrets.INFRA_REPO_PAT }}
+# retrigger: pull in stock-infrastructure bump-values.yml fix (2026-08-21T03:49:45Z)
