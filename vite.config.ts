@@ -22,5 +22,8 @@ export default defineConfig({
     // instead, since Node's is unconfigured without --localstorage-file.
     // Disabling it lets jsdom's window.localStorage win like it always did.
     execArgv: ["--no-experimental-webstorage"],
+    coverage: {
+      reporter: ["text", "lcov", "html"],
+    },
   },
 });
