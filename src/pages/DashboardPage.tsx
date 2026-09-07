@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { Card } from "../components/Card";
 import { PageHeader } from "../components/PageHeader";
+import { ApiStatusBadge } from "../components/ApiStatusBadge";
 import { useSales } from "../hooks/useSales";
 import { useExpenses } from "../hooks/useExpenses";
 import { useInventoryLedger, computeCurrentStock } from "../hooks/useInventoryLedger";
@@ -37,7 +38,10 @@ export function DashboardPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <PageHeader title="Dashboard" subtitle="How the business is doing right now" />
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <PageHeader title="Dashboard" subtitle="How the business is doing right now" />
+        <ApiStatusBadge />
+      </div>
       {isLoading ? (
         <p className="text-sm text-stone">Loading summary...</p>
       ) : (

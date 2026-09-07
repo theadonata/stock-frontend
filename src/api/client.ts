@@ -104,3 +104,19 @@ export async function apiRequest<T>(
   }
   return (await response.json()) as T;
 }
+
+// /healthz is mounted directly on the FastAPI app, not under the /api/v1
+// router (see stock-backend's app/main.py), and needs no auth -- so it
+// bypasses apiRequest's prefix/auth handling and fetches BASE_URL directly.
+export async function getHealth(): Promise<{ status: string }> {
+  let response: Response;
+  try {
+    response = await fetch(`${BASE_URL}/healthz`);
+  } catch {
+    throw new ApiError(0, "Network error -- unable to reach the server.");
+  }
+  if (!response.ok) {
+    throw new ApiError(response.status, `Health check failed (${response.status})`);
+  }
+  return (await response.json()) as { status: string };
+}

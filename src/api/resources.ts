@@ -1,7 +1,7 @@
 // Thin per-resource functions on top of apiRequest. Kept separate from the
 // React Query hooks (see src/hooks) so the raw API shape and the
 // caching/query-key layer can evolve independently.
-import { apiRequest } from "./client";
+import { apiRequest, getHealth } from "./client";
 import type {
   CogsComponents,
   Expense,
@@ -12,6 +12,10 @@ import type {
   Product,
   Sale,
 } from "../types/models";
+
+export const HealthApi = {
+  check: () => getHealth(),
+};
 
 export const AuthApi = {
   login: (payload: LoginRequest) =>
